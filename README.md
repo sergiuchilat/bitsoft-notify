@@ -292,6 +292,48 @@ If user is subscribed then "Subscribe to Telegram button" will be disabled.
 
 > Error handling in CORE Api will be implemented later
 
+## Node.js Express App sample to test callback URLs from the Telegram bot
+```javascript
+const express = require('express');
+
+const app = express();
+const port = 5555;
+
+app.use(express.json());
+
+app.post('/telegram/subscribe/success', (req, res) => {
+    const response = {
+        ...req.body,
+        success: true,
+    }
+    console.log(response);
+    res.send(response);
+});
+
+app.post('/telegram/subscribe/error', (req, res) => {
+    const response = {
+        ...req.body,
+        error: true,
+    }
+    console.log(response);
+    res.send(response);
+});
+
+app.post('/telegram/unsubscribe', (req, res) => {
+    const response = {
+        ...req.body,
+        error: true,
+    }
+    console.log(response);
+    res.send(response);
+});
+
+app.listen(port, () => {
+    console.log(`Server listening on port ${port}`);
+});
+
+```
+
 ## License
 
 This is open source project licensed under the [MIT license](https://opensource.org/license/mit/).
