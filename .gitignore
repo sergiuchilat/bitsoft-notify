@@ -1,0 +1,12 @@
+node_modules
+dist
+/logs/
+/uploads/
+/pgdata/
+/ormlogs.log
+.env.backup
+.idea
+
+config/deploy/**/secrets.*
+.env
+.envrc

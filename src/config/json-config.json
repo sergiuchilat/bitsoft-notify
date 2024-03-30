@@ -1,0 +1,82 @@
+{
+  "app": {
+    "port": 3000,
+    "requestTimeout": 9999,
+    "security": {
+      "write_access_key": "secret"
+    },
+    "log": {
+      "custom": true,
+      "levels": {
+        "error": {
+          "filename": "logs/error.log",
+          "maxFiles": "5d"
+        },
+        "all": {
+          "filename": "logs/all.log",
+          "maxFiles": "1d"
+        }
+      }
+    }
+  },
+  "db": {
+    "driver": "postgres",
+    "host": "localhost",
+    "port": 5432,
+    "user": "test",
+    "password": "test",
+    "name": "test-typeorm"
+  },
+  "mongo": {
+    "host": "localhost",
+    "port": 27017,
+    "user": "",
+    "password": "",
+    "name": "nest"
+  },
+  "redis": {
+    "host": "cache",
+    "port": 6379
+  },
+  "jwt": {
+    "token_expires_in": "1h",
+    "secret_key": "secret",
+    "public_key": "public",
+    "public_key_path": "keys/public.pem"
+  },
+  "files": {
+    "uploadDirectory": "uploads",
+    "uploadTempDirectory": "uploads/tmp",
+    "uploadTempLifetime": 60,
+    "maxFileSize": 10000000
+  },
+  "docs": {
+    "generate": true,
+    "path": "docs",
+    "version": "1.0.0",
+    "title": "Sample project API documentation",
+    "description": "Sample project API documentation description",
+    "authName": "Bearer token"
+  },
+  "appInstall": {
+    "admin_username": "root",
+    "admin_email": "root@domain.com",
+    "admin_password": "123456789!0Ab"
+  },
+  "telegram": {
+    "botName": "botname",
+    "botToken": "1234567890:ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
+  },
+  "mail": {
+    "mailer": null,
+    "host": null,
+    "port": null,
+    "username": null,
+    "password": null,
+    "encryption": null,
+    "fromAddress": null,
+    "fromName": null,
+    "retryAttempts": null,
+    "cronTimeout": null
+  }
+}

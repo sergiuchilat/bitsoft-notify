@@ -1,0 +1,14 @@
+[
+  {
+    "name": "ARA Internal: Candidate workflow",
+    "type": "Internal"
+  },
+  {
+    "name": "AM Telegram",
+    "type": "Telegram"
+  },
+  {
+    "name": "AM Mail",
+    "type": "Mail"
+  }
+]

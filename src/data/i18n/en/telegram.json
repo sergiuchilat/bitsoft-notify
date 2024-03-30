@@ -1,0 +1,13 @@
+{
+  "bot": {
+    "start": {
+      "welcome_message": "Welcome {subscriberName}! You are subscribed to the bot {botName}.",
+      "already_subscribed": "You are already subscribed to the bot!",
+      "subscriber_not_found": "Subscriber not found!",
+      "error": "Error! Please try again later or contact your administrator."
+    },
+    "on_message": {
+      "no_messages_accepted": "No messages accepted. I am created only for sending notifications to you."
+    }
+  }
+}

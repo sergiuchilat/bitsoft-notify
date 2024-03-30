@@ -1,0 +1,57 @@
+version: "3.9"
+
+services:
+  #######  Database  #######
+  postgres:
+    image: postgres:16-alpine
+    restart: always
+    hostname: postgres
+    container_name: notify-db
+    profiles:
+      - all
+      - db
+      - app
+    env_file:
+      - .env.example
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    networks:
+      - notify
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - ./data/dev/pg-data-notify:/var/lib/postgresql/data
+
+  notify-api-build-local:
+    image: notify-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    profiles:
+      - all
+      - build-local
+
+  notify-api:
+    container_name: notify-api
+    #    image: ghcr.io/sergiuchilat/bitsoft-notify:dev.latest
+    image: notify-api
+    restart: always
+    env_file:
+      - .env
+    profiles:
+      - all
+      - api
+      - app
+    networks:
+      - notify
+    ports:
+      - "127.0.0.1:3001:3000"
+    depends_on:
+      - postgres
+
+networks:
+  notify:
+    driver: bridge
