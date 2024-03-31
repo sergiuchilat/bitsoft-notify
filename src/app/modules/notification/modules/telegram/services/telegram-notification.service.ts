@@ -106,13 +106,13 @@ export class TelegramNotificationService {
       }
       await queryRunner.commitTransaction();
     } catch (err) {
-      console.log(err);
+      console.log('Error', err);
       await queryRunner.rollbackTransaction();
     } finally {
       await queryRunner.release();
     }
 
-    console.log(createdNotifications);
+    console.log('N:', createdNotifications);
 
     if (!createdNotifications.length) {
       throw new NotFoundException({
@@ -138,11 +138,14 @@ export class TelegramNotificationService {
   }
 
   private async sendPushNotification(chatId: number, notification: TelegramNotification) {
+    console.log('Sending notification', notification)
     const bot = new NodeTelegramBotApi(AppConfig.telegram.botToken);
+    console.log('Bot', bot)
     const message = `<strong>${notification.subject}</strong>\n${notification.body}`;
     try {
       return await bot.sendMessage(chatId, message, { parse_mode: 'HTML' });
     } catch (e) {
+      console.log('Error', e);
       return null;
     }
   }

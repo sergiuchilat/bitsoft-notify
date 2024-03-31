@@ -7,8 +7,8 @@ db-migrate:
 app-start-dev:
 	npm run start:dev
 
-build-app-image:
+app-build-image:
 	docker-compose --profile=build-local build
 
-app-start-image:
+app-up:
 	docker-compose  --profile=app up -d --force-recreate
