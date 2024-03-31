@@ -33,7 +33,7 @@ jobs:
       - name: 'Push Inventory Image to GitHub Container Registry'
         run: |
           docker push ghcr.io/${{ secrets.GHCR_USERNAME }}/${APP_NAME}:${APP_VERSION}
-      - name: ''
+      - name: 'Push Inventory Image to Docker Hub'
         run: |
           docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
           docker push {{ secrets.DOCKERHUB_USERNAME }}/${APP_NAME}:${APP_VERSION}
