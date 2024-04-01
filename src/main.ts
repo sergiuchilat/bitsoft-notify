@@ -5,24 +5,29 @@ import buildApiDocs from '@/docs/swagger.builder';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import AppConfig from '@/config/app-config';
 
-async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+async function bootstrap () {
+  const app = await NestFactory.create (AppModule);
 
+  app.enableVersioning ({
+    type: VersioningType.URI,
+    defaultVersion: '1',
+  }
+  );
   if (AppConfig.docs.generate) {
-    buildApiDocs(app, AppConfig.docs);
+    buildApiDocs (app, AppConfig.docs);
   }
 
-  app.useGlobalPipes(
-    new ValidationPipe({
+  app.useGlobalPipes (
+    new ValidationPipe ({
       whitelist: true,
       forbidNonWhitelisted: true,
     }),
   );
-  app.enableVersioning({
+  app.enableVersioning ({
     type: VersioningType.URI,
   });
-  app.enableCors();
-  await app.listen(AppConfig.app.port);
+  app.enableCors ();
+  await app.listen (AppConfig.app.port);
 }
 
-bootstrap();
+bootstrap ();
