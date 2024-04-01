@@ -4,7 +4,7 @@ import { ParseLocalizationMiddleware } from '@/app/middleware/middlewares/parse-
 import { CheckWriteAccessKeyMiddleware } from '@/app/middleware/middlewares/check-write-access-key-middleware.service';
 import { InternalNotificationCrudController } from '@/app/modules/notification/modules/internal/internal-notification-crud.controller';
 import { DiscordNotificationController } from '@/app/modules/notification/modules/discord/discord-notification.controller';
-import { TelegramNotificationController } from '@/app/modules/notification/modules/telegram/controllers/telegram-notification.controller';
+import { TelegramNotificationController } from '@/app/modules/notification/modules/telegram/telegram-notification.controller';
 import { MailNotificationController } from '@/app/modules/notification/modules/mail/mail-notification.controller';
 
 export default [

@@ -14,7 +14,7 @@ import {
 } from '@/app/modules/notification/modules/telegram/entities/telegram-notification.entity';
 import {
   TelegramNotificationController
-} from '@/app/modules/notification/modules/telegram/controllers/telegram-notification.controller';
+} from '@/app/modules/notification/modules/telegram/telegram-notification.controller';
 import { HttpModule } from '@nestjs/axios';
 
 @Module ({

@@ -27,7 +27,10 @@ import { NotificationConfirmReadResponseDto } from '@/app/modules/notification/m
 import { NotificationUnreadCountResponseDto } from '@/app/modules/notification/modules/internal/dto/notification-unread-count-response.dto';
 
 @ApiTags('Notifications Internal Receiver')
-@Controller('notifications/internal/own')
+@Controller({
+  version: '1',
+  path: 'notifications/internal/own',
+})
 @UseGuards(AuthGuard)
 export class InternalNotificationReceiverController {
   constructor(private readonly messageService: InternalNotificationService) {}

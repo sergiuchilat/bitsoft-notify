@@ -23,7 +23,10 @@ import { NotificationSortColumn } from '@/app/modules/notification/modules/inter
 import { NotificationGetManyResponseDto } from '@/app/modules/notification/modules/internal/dto/notification-get-many-response.dto';
 
 @ApiTags('Notifications Internal CRUD(test deploy)')
-@Controller('notifications/internal')
+@Controller({
+  version: '1',
+  path: 'notifications/internal',
+})
 export class InternalNotificationCrudController {
   constructor(private readonly messageService: InternalNotificationService) {}
 
