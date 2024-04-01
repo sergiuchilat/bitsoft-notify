@@ -4,7 +4,10 @@ import { MailNotificationCreatePayloadDto } from '@/app/modules/notification/mod
 import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 
-@Controller('notifications/mail')
+@Controller({
+  version: '1',
+  path: 'notifications/mail',
+})
 @ApiTags('Notifications Mail')
 export class MailNotificationController {
   constructor(private readonly notificationService: MailNotificationService) {}

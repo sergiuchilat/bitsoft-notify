@@ -6,7 +6,10 @@ import { ApiTags } from '@nestjs/swagger';
 import { RequestLocalization } from '@/app/request/decorators/request-localization.decorator';
 import { Language } from '@/app/enum/language.enum';
 
-@Controller('notifications/discord')
+@Controller({
+  version: '1',
+  path: 'notifications/discord',
+})
 @ApiTags('Notifications Discord')
 export class DiscordNotificationController {
   constructor(private readonly discordNotificationService: DiscordNotificationService) {}

@@ -1,6 +1,6 @@
 import {Body, Controller, Delete, Get, HttpStatus, Param, Post, Res} from '@nestjs/common';
 import { TelegramNotificationService } from '@/app/modules/notification/modules/telegram/services/telegram-notification.service';
-import { ApiHeader, ApiOkResponse, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { TelegramNotificationCreatePayloadDto } from '@/app/modules/notification/modules/telegram/dto/telegram-notification-create-payload.dto';
 import { Response } from 'express';
 import { TelegramNotificationCreateResponseDto } from '@/app/modules/notification/modules/telegram/dto/telegram-notification-create-response.dto';
@@ -11,7 +11,10 @@ import {
   TelegramSubscriberCreatePayloadDto
 } from '@/app/modules/notification/modules/telegram/dto/telegram-subscriber-create-payload.dto';
 
-@Controller('notifications/telegram')
+@Controller({
+  version: '1',
+  path: 'notifications/telegram',
+})
 
 @ApiTags('Notifications Telegram')
 export class TelegramNotificationController {
