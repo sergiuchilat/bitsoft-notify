@@ -138,9 +138,9 @@ export class TelegramNotificationService {
   }
 
   private async sendPushNotification(chatId: number, notification: TelegramNotification) {
-    console.log('Sending notification', notification)
+    console.log('Sending notification', notification);
     const bot = new NodeTelegramBotApi(AppConfig.telegram.botToken);
-    console.log('Bot', bot)
+    console.log('Bot', bot);
     const message = `<strong>${notification.subject}</strong>\n${notification.body}`;
     try {
       return await bot.sendMessage(chatId, message, { parse_mode: 'HTML' });
