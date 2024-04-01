@@ -11,8 +11,8 @@ async function bootstrap () {
   app.enableVersioning ({
     type: VersioningType.URI,
     defaultVersion: '1',
-  }
-  );
+  });
+
   if (AppConfig.docs.generate) {
     buildApiDocs (app, AppConfig.docs);
   }
