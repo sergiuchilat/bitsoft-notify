@@ -3,11 +3,11 @@ import {
 } from '@/app/modules/notification/modules/telegram/entities/telegram-notification-receiver.entity';
 import { Repository } from 'typeorm';
 import AppConfig from '@/config/app-config';
-import { setLanguage } from '@/app/utils/localization';
+// import { setLanguage } from '@/app/utils/localization';
 import { InjectRepository } from '@nestjs/typeorm';
 import { I18nService } from 'nestjs-i18n';
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import { Language } from '@/app/enum/language.enum';
+// import { Language } from '@/app/enum/language.enum';
 import NodeTelegramBotApi, { Message } from 'node-telegram-bot-api';
 import { HttpService } from '@nestjs/axios';
 import { AxiosResponse } from 'axios';
@@ -53,18 +53,20 @@ export class TelegramNotificationEventsService extends NodeTelegramBotApi implem
     await this.sendMessage (message.from.id, 'Starting subscription...');
 
     try {
-      const [userUuid, language, id] = message.query.split ('---');
+      const [userUuid, language] = message.query.split ('---');
+      console.log ('userUuid', userUuid);
+      console.log ('language', language);
       const chatId = Number (message.from.id);
       const subscriberUuid = userUuid.trim ();
-      const botName = AppConfig.telegram.botName;
+      //const botName = AppConfig.telegram.botName;
       let subscriberName = [message.from.first_name, message.from.last_name].join (' ').trim ();
-      const subscriberUsername = message.from.username.trim ();
+      const subscriberUsername = message.from?.username?.trim ();
 
       if (!subscriberName.length) {
-        subscriberName = message.from.username.trim ();
+        subscriberName = subscriberUsername;
       }
 
-      const subscriberLanguage = setLanguage (language as Language);
+      //const subscriberLanguage = setLanguage (language as Language);
       const existingSubscriber = await this.existingSubscriber (subscriberUuid, subscriberUsername, chatId);
 
       if (!existingSubscriber) {
@@ -100,7 +102,7 @@ export class TelegramNotificationEventsService extends NodeTelegramBotApi implem
         await this.sendMessage (message.from.id, 'Error! Cannot finish subscription. END');
       }
 
-      await this.sendMessage (message.from.id, 'Subscription finished');
+      await this.sendMessage (message.from.id, `Hello ${subscriberName},sSubscription finished!`);
 
     } catch (e) {
       console.error (e);
@@ -154,7 +156,7 @@ export class TelegramNotificationEventsService extends NodeTelegramBotApi implem
     return response.affected > 0;
   }
 
-  private async existingSubscriber (subscriberUuid: string, subscriberUsername: string, chatId: number) {
+  private async existingSubscriber (subscriberUuid: string) {
 
     return await this.telegramReceiverRepository.findOne ({
       where: [

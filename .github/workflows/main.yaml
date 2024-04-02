@@ -3,11 +3,11 @@ name: "[DEV] CI/CD Notify API"
 on:
   push:
     branches:
-      - dev
+      - main
 
 env:
   APP_NAME: bitsoft-notify
-  APP_VERSION: "v1.0.0-beta"
+  APP_VERSION: "v1.0.0"
   NETWORK: nest-notify
 
 jobs:
