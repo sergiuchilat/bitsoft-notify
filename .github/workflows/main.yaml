@@ -1,4 +1,4 @@
-name: "[DEV] CI/CD Notify API"
+name: "[MAIN] CI/CD Notify API"
 
 on:
   push:
