@@ -67,7 +67,7 @@ export class TelegramNotificationEventsService extends NodeTelegramBotApi implem
       }
 
       //const subscriberLanguage = setLanguage (language as Language);
-      const existingSubscriber = await this.existingSubscriber (subscriberUuid, subscriberUsername, chatId);
+      const existingSubscriber = await this.existingSubscriber (subscriberUuid);
 
       if (!existingSubscriber) {
         await this.sendMessage (message.from.id, 'Subscription was not started. Please start subscription on your APP or contact administrator. END');
