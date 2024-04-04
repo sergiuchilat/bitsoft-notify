@@ -3,11 +3,11 @@ import {
 } from '@/app/modules/notification/modules/telegram/entities/telegram-notification-receiver.entity';
 import { Repository } from 'typeorm';
 import AppConfig from '@/config/app-config';
-// import { setLanguage } from '@/app/utils/localization';
+//import { setLanguage } from '@/app/utils/localization';
 import { InjectRepository } from '@nestjs/typeorm';
 import { I18nService } from 'nestjs-i18n';
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
-// import { Language } from '@/app/enum/language.enum';
+//import { Language } from '@/app/enum/language.enum';
 import NodeTelegramBotApi, { Message } from 'node-telegram-bot-api';
 import { HttpService } from '@nestjs/axios';
 import { AxiosResponse } from 'axios';
@@ -50,21 +50,17 @@ export class TelegramNotificationEventsService extends NodeTelegramBotApi implem
   }
 
   private async onStart (message: Message & { query: string }) {
-    await this.sendMessage (message.from.id, 'Starting subscription...');
+
 
     try {
       const [userUuid, language] = message.query.split ('---');
-      console.log ('userUuid', userUuid);
       console.log ('language', language);
       const chatId = Number (message.from.id);
       const subscriberUuid = userUuid.trim ();
       //const botName = AppConfig.telegram.botName;
-      let subscriberName = [message.from.first_name, message.from.last_name].join (' ').trim ();
-      const subscriberUsername = message.from?.username?.trim ();
+      const subscriberName = [message.from.first_name, message.from.last_name].join (' ').trim () || message.from.username.trim ();
 
-      if (!subscriberName.length) {
-        subscriberName = subscriberUsername;
-      }
+      await this.sendMessage (message.from.id, `Hello ${subscriberName}! Starting subscription...`);
 
       //const subscriberLanguage = setLanguage (language as Language);
       const existingSubscriber = await this.existingSubscriber (subscriberUuid);
@@ -84,12 +80,13 @@ export class TelegramNotificationEventsService extends NodeTelegramBotApi implem
       if(existingSubscriber.callback_url_subscribed_success){
         const callbackSuccessResponse: any = await this.sendWebhookOnSuccessfullySubscribed(
           subscriberUuid,
-          subscriberUsername,
-          chatId,
+          subscriberName,
           existingSubscriber.callback_url_subscribed_success
         );
 
-        if(callbackSuccessResponse?.subscriberUuid !== subscriberUuid) {
+        console.log('callbackSuccessResponse', callbackSuccessResponse);
+
+        if(callbackSuccessResponse?.subscriber_uuid !== subscriberUuid) {
           await this.sendMessage (message.from.id, 'Error. Your APP callback URL is malformed. END');
 
           return;
@@ -102,7 +99,7 @@ export class TelegramNotificationEventsService extends NodeTelegramBotApi implem
         await this.sendMessage (message.from.id, 'Error! Cannot finish subscription. END');
       }
 
-      await this.sendMessage (message.from.id, `Hello ${subscriberName}, Subscription finished!`);
+      await this.sendMessage (message.from.id, 'Subscription finished');
 
     } catch (e) {
       console.error (e);
@@ -120,19 +117,18 @@ export class TelegramNotificationEventsService extends NodeTelegramBotApi implem
   private async sendWebhookOnSuccessfullySubscribed (
     subscriberUuid: string,
     subscriberUsername: string,
-    chatId: number,
     callback_url_subscribed_success: string
   ): Promise<AxiosResponse> {
     const payload: TelegramNotificationSubscribeCallbackUrlSuccessPayloadDto = {
-      subscriber_id: subscriberUuid,
+      subscriber_uuid: subscriberUuid,
       telegram_username: subscriberUsername,
-      bot_name: AppConfig.telegram.botName,
-      chat_id: chatId,
+      bot_name: AppConfig.telegram.botName
     };
+
+    console.log('KEY', AppConfig.app.security.write_access_key);
 
     return this.httpService.axiosRef.post (callback_url_subscribed_success, payload, {
       headers: {
-        'Content-Type': 'application/json',
         'x-api-key': AppConfig.app.security.write_access_key
       },
 
