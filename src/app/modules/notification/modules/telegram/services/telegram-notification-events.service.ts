@@ -89,7 +89,7 @@ export class TelegramNotificationEventsService extends NodeTelegramBotApi implem
           existingSubscriber.callback_url_subscribed_success
         );
 
-        if(callbackSuccessResponse?.chat_id !== chatId) {
+        if(callbackSuccessResponse?.subscriberUuid !== subscriberUuid) {
           await this.sendMessage (message.from.id, 'Error. Your APP callback URL is malformed. END');
 
           return;
@@ -102,7 +102,7 @@ export class TelegramNotificationEventsService extends NodeTelegramBotApi implem
         await this.sendMessage (message.from.id, 'Error! Cannot finish subscription. END');
       }
 
-      await this.sendMessage (message.from.id, `Hello ${subscriberName},sSubscription finished!`);
+      await this.sendMessage (message.from.id, `Hello ${subscriberName}, Subscription finished!`);
 
     } catch (e) {
       console.error (e);
@@ -130,7 +130,13 @@ export class TelegramNotificationEventsService extends NodeTelegramBotApi implem
       chat_id: chatId,
     };
 
-    return this.httpService.axiosRef.post (callback_url_subscribed_success, payload)
+    return this.httpService.axiosRef.post (callback_url_subscribed_success, payload, {
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': AppConfig.app.security.write_access_key
+      },
+
+    })
       .then (response => {
         console.log ('response', response.data);
         return response.data;
