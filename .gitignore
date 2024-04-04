@@ -6,6 +6,7 @@ dist
 /ormlogs.log
 .env.backup
 .idea
+data
 
 config/deploy/**/secrets.*
 .env
