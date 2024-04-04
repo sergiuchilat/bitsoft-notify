@@ -3,12 +3,10 @@ import {
 } from '@/app/modules/notification/modules/telegram/entities/telegram-notification-receiver.entity';
 import { Repository } from 'typeorm';
 import AppConfig from '@/config/app-config';
-//import { setLanguage } from '@/app/utils/localization';
 import { InjectRepository } from '@nestjs/typeorm';
-import { I18nService } from 'nestjs-i18n';
+import {I18nService} from 'nestjs-i18n';
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
-//import { Language } from '@/app/enum/language.enum';
-import NodeTelegramBotApi, { Message } from 'node-telegram-bot-api';
+import NodeTelegramBotApi, { Message, PreCheckoutQuery} from 'node-telegram-bot-api';
 import { HttpService } from '@nestjs/axios';
 import { AxiosResponse } from 'axios';
 import {
@@ -50,17 +48,19 @@ export class TelegramNotificationEventsService extends NodeTelegramBotApi implem
       parse_mode: 'HTML',
     });
   }
+  private async onDeleteMessage(message: PreCheckoutQuery) {
+    console.log(message);
+    this.logger.debug('A user left the chat');
+  }
+
 
   private async onStart (message: Message & { query: string }) {
-
 
     try {
       const [userUuid, language] = message.query.split ('---');
       const chatId = Number (message.from.id);
       const subscriberUuid = userUuid.trim ();
       const subscriberName = [message.from.first_name, message.from.last_name].join (' ')?.trim () || message.from.username?.trim ();
-
-      await this.sendMessage (message.from.id, `Hello ${subscriberName}! Starting subscription...`);
 
       const subscriberLanguage = setLanguage(language as Language);
       const startSubscription = this.i18n.t ('telegram.bot.start.start_subscription', {
@@ -95,10 +95,10 @@ export class TelegramNotificationEventsService extends NodeTelegramBotApi implem
         );
 
         if(callbackSuccessResponse?.subscriber_uuid !== subscriberUuid) {
-            const malformedCallbackUrl = this.i18n.t ('telegram.bot.start.malformed_callback_url', {
-                lang: subscriberLanguage,
-            });
-        await this.sendMessage (message.from.id, malformedCallbackUrl);
+          const malformedCallbackUrl = this.i18n.t ('telegram.bot.start.malformed_callback_url', {
+            lang: subscriberLanguage,
+          });
+          await this.sendMessage (message.from.id, malformedCallbackUrl);
 
           return;
         }
@@ -147,7 +147,6 @@ export class TelegramNotificationEventsService extends NodeTelegramBotApi implem
       headers: {
         'x-api-key': AppConfig.app.security.write_access_key
       },
-
     })
       .then (response => {
         console.log ('response', response.data);
