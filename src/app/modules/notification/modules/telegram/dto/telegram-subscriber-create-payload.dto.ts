@@ -1,4 +1,4 @@
-import { IsOptional, IsString, IsUrl, Length, ValidateNested } from 'class-validator';
+import { IsOptional, IsString, Length, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Language } from '@/app/enum/language.enum';
 import { Type } from 'class-transformer';
@@ -6,9 +6,9 @@ import { Type } from 'class-transformer';
 export class CallbackURLSsDto{
   // @ApiProperty ({ example: 'http://localhost:5555/telegram/subscribe/success', description: 'Subscribed success URL' })
   @ApiProperty ({ example: 'http://localhost:5555/telegram/subscribe/success', description: 'Subscribed success URL' })
-  //@IsUrl ({ require_protocol: true }, { message: 'subscribed_success must be a URL' })
+  //@IsUrl ({ require_protocol: false }, { message: 'subscribed_success must be a URL' })
   @IsString ({ message: 'subscribed_success must be a URL' })
-  @Length(1, 2048, {
+  @Length(0, 2048, {
     message: 'subscribed_success must contain from $constraint1 to $constraint2 characters',
   })
   @IsOptional()
@@ -18,7 +18,7 @@ export class CallbackURLSsDto{
   @ApiProperty ({ example: 'http://localhost:5555/telegram/subscribe/error', description: 'Subscribed error URL' })
   // @IsUrl ({ require_protocol: true }, { message: 'subscribed_error must be a URL' })
   @IsString ({ message: 'subscribed_error must be a URL' })
-  @Length(1, 2048, {
+  @Length(0, 2048, {
     message: 'subscribed_error must contain from $constraint1 to $constraint2 characters',
   })
   @IsOptional()
@@ -27,7 +27,7 @@ export class CallbackURLSsDto{
   @ApiProperty ({ example: 'http://localhost:5555/telegram/unsubscribe', description: 'Unsubscribe URL' })
   // @IsUrl ({ require_protocol: true }, { message: 'unsubscribe_url must be a URL' })
   @IsString ({ message: 'unsubscribe_url must be a URL' })
-  @Length(1, 2048, {
+  @Length(0, 2048, {
     message: 'subscribed_success must contain from $constraint1 to $constraint2 characters',
   })
     unsubscribe: string;
