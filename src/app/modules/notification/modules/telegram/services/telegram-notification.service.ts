@@ -13,6 +13,9 @@ import NodeTelegramBotApi from 'node-telegram-bot-api';
 import {
   TelegramSubscriberCreatePayloadDto
 } from '@/app/modules/notification/modules/telegram/dto/telegram-subscriber-create-payload.dto';
+import {
+  TelegramGroupNotificationCreatePayloadDto
+} from '@/app/modules/notification/modules/telegram/dto/telegram-group-notification-create-payload.dto';
 
 @Injectable()
 export class TelegramNotificationService {
@@ -178,5 +181,21 @@ export class TelegramNotificationService {
 
   public createSubScribeStartUrl(subscriberId: string, language: Language) {
     return `https://t.me/${AppConfig.telegram.botName}?start=${subscriberId}---${language}`;
+  }
+
+  async createGroupNotification(notificationCreatePayloadDto: TelegramGroupNotificationCreatePayloadDto) {
+    const bot = new NodeTelegramBotApi(AppConfig.telegram.botToken);
+    //console.log('Bot', bot);
+    const message = `<strong>${notificationCreatePayloadDto.subject}</strong>\n${notificationCreatePayloadDto.body}`;
+    try {
+      for(const chatId of notificationCreatePayloadDto.receivers){
+        console.log('ChatId', chatId);
+        await bot.sendMessage(chatId, message, { parse_mode: 'HTML' });
+      }
+      return true;
+    } catch (e) {
+      console.log('Error', e);
+      return null;
+    }
   }
 }

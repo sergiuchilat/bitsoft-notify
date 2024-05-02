@@ -10,6 +10,12 @@ import {
 import {
   TelegramSubscriberCreatePayloadDto
 } from '@/app/modules/notification/modules/telegram/dto/telegram-subscriber-create-payload.dto';
+import {
+  TelegramGroupNotificationCreateResponseDto
+} from '@/app/modules/notification/modules/telegram/dto/telegram-group-notification-create-response.dto';
+import {
+  TelegramGroupNotificationCreatePayloadDto
+} from '@/app/modules/notification/modules/telegram/dto/telegram-group-notification-create-payload.dto';
 
 @Controller({
   version: '1',
@@ -19,7 +25,7 @@ import {
 @ApiTags('Notifications Telegram')
 export class TelegramNotificationController {
   constructor(private readonly notificationService: TelegramNotificationService) {}
-  
+
   @Post('subscribe')
   @ApiOperation({ summary: 'Subscribe to telegram notifications' })
 
@@ -72,4 +78,21 @@ export class TelegramNotificationController {
       .status(HttpStatus.CREATED)
       .send(await this.notificationService.createNotification(notificationCreatePayloadDto));
   }
+
+  @Post('group')
+  @ApiOperation({ summary: 'Create new telegram notification for a group/groups' })
+  @ApiOkResponse({
+    description: 'Created notifications',
+    type: TelegramGroupNotificationCreateResponseDto,
+    isArray: true,
+  })
+  async createGroupNotification(
+    @Body() notificationCreatePayloadDto: TelegramGroupNotificationCreatePayloadDto,
+    @Res() response: Response,
+  ) {
+    response
+      .status(HttpStatus.CREATED)
+      .send(await this.notificationService.createGroupNotification(notificationCreatePayloadDto));
+  }
+
 }

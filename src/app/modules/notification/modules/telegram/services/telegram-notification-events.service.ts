@@ -34,7 +34,7 @@ export class TelegramNotificationEventsService extends NodeTelegramBotApi implem
   }
 
   private async onMessage (message: Message) {
-    if (message.text.startsWith ('/start')) {
+    if (message?.text?.startsWith ('/start')) {
       const param = message.text.replace ('/start', '');
 
       return this.onStart ({ ...message, query: param });
