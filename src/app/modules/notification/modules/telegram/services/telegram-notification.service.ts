@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { TelegramNotificationCreatePayloadDto } from '@/app/modules/notification/modules/telegram/dto/telegram-notification-create-payload.dto';
 import AppConfig from '@/config/app-config';
 import { DataSource, IsNull, LessThan, Repository } from 'typeorm';
@@ -149,7 +149,10 @@ export class TelegramNotificationService {
       return await bot.sendMessage(chatId, message, { parse_mode: 'HTML' });
     } catch (e) {
       console.log('Error', e);
-      return null;
+      throw new HttpException({
+        error: 'Error while sending notification',
+      }, 500);
+
     }
   }
 
@@ -184,18 +187,30 @@ export class TelegramNotificationService {
   }
 
   async createGroupNotification(notificationCreatePayloadDto: TelegramGroupNotificationCreatePayloadDto) {
-    const bot = new NodeTelegramBotApi(AppConfig.telegram.botToken);
-    //console.log('Bot', bot);
-    const message = `<strong>${notificationCreatePayloadDto.subject}</strong>\n${notificationCreatePayloadDto.body}`;
+
     try {
+      const bot = new NodeTelegramBotApi(AppConfig.telegram.botToken);
+      //console.log('Bot', bot);
+      const message = `<strong>${notificationCreatePayloadDto.subject}</strong>\n${notificationCreatePayloadDto.body}`;
       for(const chatId of notificationCreatePayloadDto.receivers){
         console.log('ChatId', chatId);
         await bot.sendMessage(chatId, message, { parse_mode: 'HTML' });
       }
-      return true;
+      return {
+        subject: notificationCreatePayloadDto.subject,
+      };
     } catch (e) {
-      console.log('Error', e);
-      return null;
+      if(e?.response?.statusCode >= 400 && e?.response?.statusCode < 500) {
+        throw new HttpException({
+          error_message: 'Invalid chat id or bot is not in the group',
+          error_code: 'INVALID_CHAT_ID',
+        }, 400);
+      }
+      throw new HttpException({
+        error_message: 'Error while sending notification',
+        error_code: 'SENDING_ERROR',
+      }, 500);
+
     }
   }
 }
