@@ -28,7 +28,6 @@ export class TelegramNotificationController {
 
   @Post('subscribe')
   @ApiOperation({ summary: 'Subscribe to telegram notifications' })
-
   async subscribe(
     @Body() subscriber: TelegramSubscriberCreatePayloadDto,
     @Res() response: Response,

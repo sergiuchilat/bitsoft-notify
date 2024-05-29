@@ -1,4 +1,4 @@
-import { ConflictException, HttpException, Injectable, NotFoundException } from '@nestjs/common';
+import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { TelegramNotificationCreatePayloadDto } from '@/app/modules/notification/modules/telegram/dto/telegram-notification-create-payload.dto';
 import AppConfig from '@/config/app-config';
 import { DataSource, IsNull, LessThan, Repository } from 'typeorm';
@@ -34,8 +34,17 @@ export class TelegramNotificationService {
       },
     });
     if (existingSubscriber) {
-      throw new ConflictException({
-        error_code: 'SUBSCRIBER_ALREADY_EXISTS',
+      await this.telegramReceiverRepository.update(existingSubscriber.id, {
+        created_at: new Date(),
+        language: subscriber.language,
+        callback_url_subscribed_success: subscriber.callback_urls.subscribed_success,
+        callback_url_subscribed_error: subscriber.callback_urls.subscribed_error,
+        callback_url_unsubscribe: subscriber.callback_urls.unsubscribe,
+      });
+      return await this.telegramReceiverRepository.findOne({
+        where: {
+          receiver_uuid: subscriber.subscriber_uuid,
+        },
       });
     }
     try {
