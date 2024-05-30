@@ -41,11 +41,15 @@ export class TelegramNotificationService {
         callback_url_subscribed_error: subscriber.callback_urls.subscribed_error,
         callback_url_unsubscribe: subscriber.callback_urls.unsubscribe,
       });
-      return await this.telegramReceiverRepository.findOne({
-        where: {
-          receiver_uuid: subscriber.subscriber_uuid,
-        },
-      });
+      return {
+        ...await this.telegramReceiverRepository.findOne({
+          where: {
+            receiver_uuid: subscriber.subscriber_uuid,
+          },
+        }),
+        'bot_name': AppConfig.telegram.botName,
+        'subscribe_start_url': this.createSubScribeStartUrl(subscriber.subscriber_uuid, subscriber.language),
+      };
     }
     try {
       const subscriberEntity = new TelegramNotificationReceiver();
