@@ -60,7 +60,8 @@ export class TelegramNotificationEventsService extends NodeTelegramBotApi implem
       const [userUuid, language] = message.query.split ('---');
       const chatId = Number (message.from.id);
       const subscriberUuid = userUuid.trim ();
-      const subscriberName = [message.from.first_name, message.from.last_name].join (' ')?.trim () || message.from.username?.trim ();
+      // const subscriberName = [message.from.first_name, message.from.last_name].join (' ')?.trim () || message.from.username?.trim ();
+      const subscriberUsername = message.from.username?.trim ();
 
       const subscriberLanguage = setLanguage(language as Language);
       const startSubscription = this.i18n.t ('telegram.bot.start.start_subscription', {
@@ -90,7 +91,7 @@ export class TelegramNotificationEventsService extends NodeTelegramBotApi implem
       if(existingSubscriber.callback_url_subscribed_success){
         const callbackSuccessResponse: any = await this.sendWebhookOnSuccessfullySubscribed(
           subscriberUuid,
-          subscriberName,
+          subscriberUsername,
           existingSubscriber.callback_url_subscribed_success
         );
 
