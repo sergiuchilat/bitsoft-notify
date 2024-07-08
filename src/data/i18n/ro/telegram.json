@@ -9,7 +9,7 @@
       "start_subscription": "Se începe abonarea...",
       "malformed_callback_url": "Eroare. Adresa URL de apel invers al aplicației este incorectă.",
       "cannot_subscription": "Eroare! Nu se poate termina abonarea.",
-      "subscription_finished": "Abonarea s-a finisat"
+      "subscription_finished": "Abonarea s-a finisat. Reveniți la aplicația dvs din browser pentru a începe primirea notificărilor.",
     },
     "on_message": {
       "no_messages_accepted": "Nu accept mesaje. Eu sunt creat doar pentru a va expedia notificari."
