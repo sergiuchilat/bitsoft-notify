@@ -9,7 +9,7 @@
       "start_subscription": "Starting subscription...",
       "malformed_callback_url": "Error. Your APP callback URL is malformed.",
       "cannot_subscription": "Error! Cannot finish subscription.",
-      "subscription_finished": "Subscription finished. Please return to your browser from where you started subscription."
+      "subscription_finished": "Subscription finished. Please return to your browser from where you started subscription!"
     },
     "on_message": {
       "no_messages_accepted": "No messages accepted. I am created only for sending notifications to you."
