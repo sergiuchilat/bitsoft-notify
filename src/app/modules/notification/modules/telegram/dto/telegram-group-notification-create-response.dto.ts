@@ -14,7 +14,7 @@ export class TelegramGroupNotificationCreateResponseDto {
 
   @ApiProperty({ example: 'Body', description: 'Body' })
   @IsString({ message: 'Body must be a string' })
-  @Length(1, 1000, {
+  @Length(1, 3000, {
     message: 'Body must contain from $constraint1 to $constraint2 characters',
   })
   @Expose()
