@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { TelegramNotificationCreatePayloadDto } from '@/app/modules/notification/modules/telegram/dto/telegram-notification-create-payload.dto';
 import AppConfig from '@/config/app-config';
 import { DataSource, IsNull, LessThan, Repository } from 'typeorm';
@@ -13,6 +13,9 @@ import NodeTelegramBotApi from 'node-telegram-bot-api';
 import {
   TelegramSubscriberCreatePayloadDto
 } from '@/app/modules/notification/modules/telegram/dto/telegram-subscriber-create-payload.dto';
+import {
+  TelegramGroupNotificationCreatePayloadDto
+} from '@/app/modules/notification/modules/telegram/dto/telegram-group-notification-create-payload.dto';
 
 @Injectable()
 export class TelegramNotificationService {
@@ -31,9 +34,22 @@ export class TelegramNotificationService {
       },
     });
     if (existingSubscriber) {
-      throw new ConflictException({
-        error_code: 'SUBSCRIBER_ALREADY_EXISTS',
+      await this.telegramReceiverRepository.update(existingSubscriber.id, {
+        created_at: new Date(),
+        language: subscriber.language,
+        callback_url_subscribed_success: subscriber.callback_urls.subscribed_success,
+        callback_url_subscribed_error: subscriber.callback_urls.subscribed_error,
+        callback_url_unsubscribe: subscriber.callback_urls.unsubscribe,
       });
+      return {
+        ...await this.telegramReceiverRepository.findOne({
+          where: {
+            receiver_uuid: subscriber.subscriber_uuid,
+          },
+        }),
+        'bot_name': AppConfig.telegram.botName,
+        'subscribe_start_url': this.createSubScribeStartUrl(subscriber.subscriber_uuid, subscriber.language),
+      };
     }
     try {
       const subscriberEntity = new TelegramNotificationReceiver();
@@ -146,7 +162,10 @@ export class TelegramNotificationService {
       return await bot.sendMessage(chatId, message, { parse_mode: 'HTML' });
     } catch (e) {
       console.log('Error', e);
-      return null;
+      throw new HttpException({
+        error: 'Error while sending notification',
+      }, 500);
+
     }
   }
 
@@ -178,5 +197,33 @@ export class TelegramNotificationService {
 
   public createSubScribeStartUrl(subscriberId: string, language: Language) {
     return `https://t.me/${AppConfig.telegram.botName}?start=${subscriberId}---${language}`;
+  }
+
+  async createGroupNotification(notificationCreatePayloadDto: TelegramGroupNotificationCreatePayloadDto) {
+
+    try {
+      const bot = new NodeTelegramBotApi(AppConfig.telegram.botToken);
+      //console.log('Bot', bot);
+      const message = `<strong>${notificationCreatePayloadDto.subject}</strong>\n${notificationCreatePayloadDto.body}`;
+      for(const chatId of notificationCreatePayloadDto.receivers){
+        console.log('ChatId', chatId);
+        await bot.sendMessage(chatId, message, { parse_mode: 'HTML' });
+      }
+      return {
+        subject: notificationCreatePayloadDto.subject,
+      };
+    } catch (e) {
+      if(e?.response?.statusCode >= 400 && e?.response?.statusCode < 500) {
+        throw new HttpException({
+          error_message: 'Invalid chat id or bot is not in the group',
+          error_code: 'INVALID_CHAT_ID',
+        }, 400);
+      }
+      throw new HttpException({
+        error_message: 'Error while sending notification',
+        error_code: 'SENDING_ERROR',
+      }, 500);
+
+    }
   }
 }

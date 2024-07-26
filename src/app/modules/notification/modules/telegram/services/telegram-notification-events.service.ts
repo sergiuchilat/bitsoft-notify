@@ -3,17 +3,17 @@ import {
 } from '@/app/modules/notification/modules/telegram/entities/telegram-notification-receiver.entity';
 import { Repository } from 'typeorm';
 import AppConfig from '@/config/app-config';
-//import { setLanguage } from '@/app/utils/localization';
 import { InjectRepository } from '@nestjs/typeorm';
-import { I18nService } from 'nestjs-i18n';
+import {I18nService} from 'nestjs-i18n';
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
-//import { Language } from '@/app/enum/language.enum';
-import NodeTelegramBotApi, { Message } from 'node-telegram-bot-api';
+import NodeTelegramBotApi, { Message, PreCheckoutQuery} from 'node-telegram-bot-api';
 import { HttpService } from '@nestjs/axios';
 import { AxiosResponse } from 'axios';
 import {
   TelegramNotificationSubscribeCallbackUrlSuccessPayloadDto
 } from '@/app/modules/notification/modules/telegram/dto/callback-urls/telegram-notification-subscribe-callback-url-success-payload.dto';
+import {setLanguage} from '@/app/utils/localization';
+import {Language} from '@/app/enum/language.enum';
 
 @Injectable ()
 export class TelegramNotificationEventsService extends NodeTelegramBotApi implements OnModuleInit {
@@ -34,7 +34,7 @@ export class TelegramNotificationEventsService extends NodeTelegramBotApi implem
   }
 
   private async onMessage (message: Message) {
-    if (message.text.startsWith ('/start')) {
+    if (message?.text?.startsWith ('/start')) {
       const param = message.text.replace ('/start', '');
 
       return this.onStart ({ ...message, query: param });
@@ -48,31 +48,42 @@ export class TelegramNotificationEventsService extends NodeTelegramBotApi implem
       parse_mode: 'HTML',
     });
   }
+  private async onDeleteMessage(message: PreCheckoutQuery) {
+    console.log(message);
+    this.logger.debug('A user left the chat');
+  }
+
 
   private async onStart (message: Message & { query: string }) {
 
-
     try {
       const [userUuid, language] = message.query.split ('---');
-      console.log ('language', language);
       const chatId = Number (message.from.id);
       const subscriberUuid = userUuid.trim ();
-      //const botName = AppConfig.telegram.botName;
-      const subscriberName = [message.from.first_name, message.from.last_name].join (' ').trim () || message.from.username.trim ();
+      // const subscriberName = [message.from.first_name, message.from.last_name].join (' ')?.trim () || message.from.username?.trim ();
+      const subscriberUsername = message.from.username?.trim ();
 
-      await this.sendMessage (message.from.id, `Hello ${subscriberName}! Starting subscription...`);
-
-      //const subscriberLanguage = setLanguage (language as Language);
-      const existingSubscriber = await this.existingSubscriber (subscriberUuid);
+      const subscriberLanguage = setLanguage(language as Language);
+      const startSubscription = this.i18n.t ('telegram.bot.start.start_subscription', {
+        lang: subscriberLanguage,
+      });
+      await this.sendMessage(message.from.id, startSubscription);
+      const existingSubscriber = await this.existingSubscriber(subscriberUuid);
 
       if (!existingSubscriber) {
-        await this.sendMessage (message.from.id, 'Subscription was not started. Please start subscription on your APP or contact administrator. END');
+        const notSubscribedMessage = this.i18n.t ('telegram.bot.start.not_subscribed', {
+          lang: subscriberLanguage,
+        });
+        await this.sendMessage(message.from.id, notSubscribedMessage);
 
         return;
       }
 
       if (existingSubscriber.receiver_uuid === subscriberUuid && existingSubscriber.chat_id === chatId) {
-        await this.sendMessage (message.from.id, 'Already subscribed. END');
+        const alreadySubscribed = this.i18n.t ('telegram.bot.start.already_subscribed', {
+          lang: subscriberLanguage,
+        });
+        await this.sendMessage (message.from.id, alreadySubscribed);
 
         return;
       }
@@ -80,27 +91,33 @@ export class TelegramNotificationEventsService extends NodeTelegramBotApi implem
       if(existingSubscriber.callback_url_subscribed_success){
         const callbackSuccessResponse: any = await this.sendWebhookOnSuccessfullySubscribed(
           subscriberUuid,
-          subscriberName,
+          subscriberUsername,
           existingSubscriber.callback_url_subscribed_success
         );
 
-        console.log('callbackSuccessResponse', callbackSuccessResponse);
-
         if(callbackSuccessResponse?.subscriber_uuid !== subscriberUuid) {
-          await this.sendMessage (message.from.id, 'Error. Your APP callback URL is malformed. END');
+          const malformedCallbackUrl = this.i18n.t ('telegram.bot.start.malformed_callback_url', {
+            lang: subscriberLanguage,
+          });
+          await this.sendMessage (message.from.id, malformedCallbackUrl);
 
           return;
         }
       }
 
-      const subscriptionFinished = await this.finishSubscription (subscriberUuid, chatId);
+      const subscriptionFinished = await this.finishSubscription(subscriberUuid, chatId);
 
       if(!subscriptionFinished) {
-        await this.sendMessage (message.from.id, 'Error! Cannot finish subscription. END');
+        const cannotSubscription = this.i18n.t ('telegram.bot.start.cannot_subscription', {
+          lang: subscriberLanguage,
+        });
+        await this.sendMessage (message.from.id, cannotSubscription);
       }
 
-      await this.sendMessage (message.from.id, 'Subscription finished');
-
+      const subscriptionFinishedMessage = this.i18n.t ('telegram.bot.start.subscription_finished', {
+        lang: subscriberLanguage,
+      });
+      await this.sendMessage(message.from.id, subscriptionFinishedMessage);
     } catch (e) {
       console.error (e);
       const messageText = this.i18n.t ('telegram.bot.start.error') + JSON.stringify (e);
@@ -131,7 +148,6 @@ export class TelegramNotificationEventsService extends NodeTelegramBotApi implem
       headers: {
         'x-api-key': AppConfig.app.security.write_access_key
       },
-
     })
       .then (response => {
         console.log ('response', response.data);
