@@ -20,7 +20,7 @@ export class TelegramNotificationReceiver {
     unique: true,
     nullable: true,
   })
-    chat_id: number;
+    chat_id: string;
 
   @Column({
     nullable: false,
@@ -47,7 +47,7 @@ export class TelegramNotificationReceiver {
     nullable: true,
   })
     callback_url_unsubscribe: string;
-  
+
   @CreateDateColumn({
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP(6)',
