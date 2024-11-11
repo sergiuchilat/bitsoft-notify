@@ -18,8 +18,7 @@ export class ParseTokenMiddleware implements NestMiddleware {
       });
 
       req.user = {
-        uuid: parsedToken.sub,
-        roles: parsedToken.roles,
+        uuid: parsedToken.sub
       };
       next();
     } catch (e) {

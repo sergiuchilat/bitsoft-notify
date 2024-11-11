@@ -1,10 +1,9 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsDate, IsEnum, IsOptional, IsString, Length } from 'class-validator';
-import { Language } from '@/app/enum/language.enum';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsDate, IsString, Length } from 'class-validator';
 import { Exclude, Expose } from 'class-transformer';
 
 @Exclude()
-export class TelegramNotificationCreateResponseDto {
+export class TelegramGroupNotificationCreateResponseDto {
   @ApiProperty({ example: 'Subject', description: 'Subject' })
   @IsString({ message: 'Subject must be a string' })
   @Length(1, 255, {
@@ -21,15 +20,9 @@ export class TelegramNotificationCreateResponseDto {
   @Expose()
     body: string;
 
-  @ApiPropertyOptional({ example: 'EN', description: 'Language', type: 'string', enum: Language })
-  @IsEnum(Language)
-  @IsOptional()
-  @Expose()
-    language?: Language | null;
-
   @ApiProperty({
-    example: ['74326f56-16ca-49dd-9679-deb992d5534d'],
-    description: 'Notification receivers',
+    example: ['-123456789'],
+    description: 'Notification groups receivers',
     name: 'receivers',
   })
   @IsString()
