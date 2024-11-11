@@ -58,7 +58,7 @@ export class TelegramNotificationEventsService extends NodeTelegramBotApi implem
 
     try {
       const [userUuid, language] = message.query.split ('---');
-      const chatId = Number (message.from.id);
+      const chatId =  String(message.from.id);
       const subscriberUuid = userUuid.trim ();
       // const subscriberName = [message.from.first_name, message.from.last_name].join (' ')?.trim () || message.from.username?.trim ();
       const subscriberUsername = message.from.username?.trim ();
@@ -159,7 +159,7 @@ export class TelegramNotificationEventsService extends NodeTelegramBotApi implem
       });
   }
 
-  private async finishSubscription (subscriberUuid: string, chatId: number) {
+  private async finishSubscription (subscriberUuid: string, chatId: string) {
     const response = await this.telegramReceiverRepository.update (
       {
         // id: parseInt(id),

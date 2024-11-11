@@ -153,13 +153,13 @@ export class TelegramNotificationService {
     });
   }
 
-  private async sendPushNotification(chatId: number, notification: TelegramNotification) {
+  private async sendPushNotification(chatId: string, notification: TelegramNotification) {
     console.log('Sending notification', notification);
     const bot = new NodeTelegramBotApi(AppConfig.telegram.botToken);
     console.log('Bot', bot);
     const message = `<strong>${notification.subject}</strong>\n${notification.body}`;
     try {
-      return await bot.sendMessage(chatId, message, { parse_mode: 'HTML' });
+      return await bot.sendMessage(Number(chatId), message, { parse_mode: 'HTML' });
     } catch (e) {
       console.log('Error', e);
       throw new HttpException({
