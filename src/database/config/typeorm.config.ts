@@ -14,7 +14,7 @@ const config = {
   entities: ['dist/**/*.entity{.ts,.js}'],
   migrations: ['dist/**/database/migrations/*.js'],
   autoLoadEntities: true,
-  synchronize: false,
+  synchronize: true,
   logging: false,
   maxQueryExecutionTime: 1000,
   // logger: 'file',
