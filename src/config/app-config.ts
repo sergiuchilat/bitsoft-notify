@@ -55,7 +55,7 @@ class AppConfigSingleton {
       publicKey: null,
     },
     docs: {
-      generate: false,
+      generate: true,
       path: null,
       version: null,
       title: null,
