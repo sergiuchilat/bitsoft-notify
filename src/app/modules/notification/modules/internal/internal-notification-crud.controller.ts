@@ -22,7 +22,7 @@ import { InternalNotificationCreatePayloadDto } from '@/app/modules/notification
 import { NotificationSortColumn } from '@/app/modules/notification/modules/internal/validators/notification-sort-column.validator';
 import { NotificationGetManyResponseDto } from '@/app/modules/notification/modules/internal/dto/notification-get-many-response.dto';
 
-@ApiTags('Notifications Internal CRUD(test deploy)')
+@ApiTags('Notifications Internal CRUD(test deploy 2)')
 @Controller({
   version: '1',
   path: 'notifications/internal',
