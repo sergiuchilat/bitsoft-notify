@@ -11,3 +11,5 @@ data
 config/deploy/**/secrets.*
 .env
 .envrc
+.wwebjs_auth
+.wwebjs_cache

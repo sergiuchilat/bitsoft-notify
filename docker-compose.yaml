@@ -51,7 +51,13 @@ services:
       - "127.0.0.1:3001:3001"
     depends_on:
       - postgres
+    volumes:
+      - wwebjs_auth_data:/app/.wwebjs_auth
+      - wwebjs_cache_data:/app/.wwebjs_cache
 
 networks:
   notify:
     driver: bridge
+volumes:
+  wwebjs_auth_data:
+  wwebjs_cache_data:
