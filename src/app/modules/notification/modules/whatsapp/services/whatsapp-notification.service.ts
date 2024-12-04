@@ -11,7 +11,6 @@ export class WhatsappNotificationService implements OnModuleInit {
     authStrategy: new LocalAuth(),
     puppeteer: {
       args: ['--no-sandbox', '--disable-setuid-sandbox'], // for non GUI environments
-      executablePath: '/usr/bin/chromium',
     },
   });
 
