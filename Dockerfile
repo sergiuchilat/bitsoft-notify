@@ -52,6 +52,7 @@ USER node
 ###################
 
 FROM node:18-alpine As production
+
 # Install necessary dependencies for Puppeteer and Chromium
 RUN apk add --no-cache \
     bash \
@@ -60,22 +61,20 @@ RUN apk add --no-cache \
     libxcomposite \
     libxrandr \
     libxi \
-    libgdk_pixbuf \
-    libcups \
+    nss \
     freetype \
     ttf-dejavu \
-    nss \
     harfbuzz \
-    at-spi2-atk \
     pango \
     ttf-freefont \
-    libgtk3 \
+    chromium \
+    gtk+3.0 \
     libvpx \
-    ffmpeg \
-    chromium
+    ffmpeg
 
 # Set environment variables for Puppeteer to know where the Chromium binary is
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+
 WORKDIR /app
 # Copy the bundled code from the build stage to the production image
 COPY --chown=node:node --from=build /app/node_modules ./node_modules
