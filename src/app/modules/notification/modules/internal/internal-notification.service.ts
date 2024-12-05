@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, IsNull, Repository } from 'typeorm';
+import { DataSource, IsNull, Repository, DeleteResult } from 'typeorm';
 import { InternalNotification } from './entities/internal-notification.entity';
 import { InternalNotificationCreatePayloadDto } from './dto/internal-notification-create-payload.dto';
 import { plainToInstance } from 'class-transformer';
@@ -225,17 +225,8 @@ export class InternalNotificationService {
     }
   }
 
-  async delete(uuid: string): Promise<void> {
-    try {
-      await this.notificationRepository.findOneOrFail({
-        where: [{ uuid }],
-      });
-      await this.notificationRepository.delete({
-        uuid,
-      });
-    } catch (e) {
-      throw new NotFoundException();
-    }
+  async delete(uuid: string): Promise<DeleteResult>  {
+      return this.notificationRepository.delete(uuid);
   }
 
   private async emitEventUnreadCounter(receiver_uuid: string) {
