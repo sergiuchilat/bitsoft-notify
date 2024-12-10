@@ -1,7 +1,7 @@
-import { ArrayNotEmpty, IsString, Length } from 'class-validator';
+import { ArrayNotEmpty, IsString, Length, Matches } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class SendMessageDto {
+export class SendPersonalMessageDto {
   @ApiProperty({
     example: 'Subject',
     description: 'Subject',
@@ -28,11 +28,14 @@ export class SendMessageDto {
   body: string;
 
   @ApiProperty({
-    example: ['120363352716331799@g.us'],
-    description: 'Notification group IDs',
+    example: ['+12036335271', '+631799123456'],
+    description: 'Notification group phone numbers in international format',
     name: 'receivers',
   })
-  @IsString({ each: true })
   @ArrayNotEmpty()
+  @Matches(/^\+\d{1,3}\d{4,14}$/, {
+    each: true,
+    message: 'each value should be a phone number in international format',
+  })
   receivers: string[];
 }
