@@ -6,6 +6,7 @@ import { InternalNotificationCrudController } from '@/app/modules/notification/m
 import { DiscordNotificationController } from '@/app/modules/notification/modules/discord/discord-notification.controller';
 import { TelegramNotificationController } from '@/app/modules/notification/modules/telegram/telegram-notification.controller';
 import { MailNotificationController } from '@/app/modules/notification/modules/mail/mail-notification.controller';
+import { WhatsappNotificationController } from '@/app/modules/notification/modules/whatsapp/controllers/whatsapp-notification.controller';
 
 export default [
   {
@@ -31,5 +32,9 @@ export default [
   {
     guard: CheckWriteAccessKeyMiddleware,
     routes: MailNotificationController,
+  },
+  {
+    guard: CheckWriteAccessKeyMiddleware,
+    routes: WhatsappNotificationController,
   },
 ];
