@@ -78,6 +78,10 @@ class AppConfigSingleton {
       retryAttempts: null,
       cronTimeout: null,
     },
+    slack: {
+      token: null,
+      apiUrl: null,
+    },
   };
 
   public static getInstance(): AppConfigSingleton {

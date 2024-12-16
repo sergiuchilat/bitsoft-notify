@@ -9,8 +9,6 @@ dotenv.config();
 export default class EnvConfigStrategy {
   private readonly config: AppConfigInterface = null;
 
-
-
   constructor() {
     //console.log('process ENV', process.env);
     let JWT_PUBLIC_KEY = '';
@@ -19,7 +17,6 @@ export default class EnvConfigStrategy {
     } catch (e) {
       console.log('Error reading JWT_PUBLIC_KEY_PATH', e.message);
     }
-
 
     this.config = {
       app: {
@@ -80,6 +77,10 @@ export default class EnvConfigStrategy {
         fromName: process.env.MAIL_FROM_NAME,
         retryAttempts: Number(process.env.MAIL_RETRY_ATTEMPTS),
         cronTimeout: process.env.MAIL_CRON_TIMEOUT,
+      },
+      slack: {
+        token: process.env.SLACK_TOKEN,
+        apiUrl: process.env.SLACK_API_URL,
       },
     };
 

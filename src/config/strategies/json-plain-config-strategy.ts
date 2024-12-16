@@ -67,6 +67,10 @@ export default class JsonPlainConfigStrategy {
         retryAttempts: Number(jsonPlainConfig.mail.retryAttempts),
         cronTimeout: jsonPlainConfig.mail.cronTimeout,
       },
+      slack: {
+        token: jsonPlainConfig.slack.token,
+        apiUrl: jsonPlainConfig.slack.apiUrl,
+      },
     };
     this.config.db.url = generateDatabaseUrl(this.config.db);
   }

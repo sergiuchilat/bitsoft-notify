@@ -7,6 +7,7 @@ import { DiscordNotificationController } from '@/app/modules/notification/module
 import { TelegramNotificationController } from '@/app/modules/notification/modules/telegram/telegram-notification.controller';
 import { MailNotificationController } from '@/app/modules/notification/modules/mail/mail-notification.controller';
 import { WhatsappNotificationController } from '@/app/modules/notification/modules/whatsapp/controllers/whatsapp-notification.controller';
+import { SlackController } from '@/app/modules/notification/modules/slack/slack.controller';
 
 export default [
   {
@@ -36,5 +37,9 @@ export default [
   {
     guard: CheckWriteAccessKeyMiddleware,
     routes: WhatsappNotificationController,
+  },
+  {
+    guard: CheckWriteAccessKeyMiddleware,
+    routes: SlackController,
   },
 ];

@@ -78,5 +78,9 @@
     "fromName": null,
     "retryAttempts": null,
     "cronTimeout": null
+  },
+  "slack": {
+    "token": null,
+    "apiUrl": null
   }
 }
