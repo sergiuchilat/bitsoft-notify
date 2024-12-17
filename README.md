@@ -357,6 +357,7 @@ Follow these steps to set up and send notifications to Slack channels using the 
 
 - Go to the [Slack API App page](https://api.slack.com/apps).
 - Click on **Create New App** and follow the prompts to create your Slack app.
+- Add permissions for created app: channels:read, chat:write, chat:write.customize
 
 ---
 
@@ -386,7 +387,9 @@ SLACK_API_URL=https://slack.com/api
 
 `GET /api/v1/notifications/slack/conversations`
 
-## 6. Send notifications
+## 6. Add created app to your Slack channel
+
+## 7. Send notifications
 
 `POST /api/v1/slack/notifications`
 
