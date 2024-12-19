@@ -71,6 +71,10 @@ export default class JsonPlainConfigStrategy {
         token: jsonPlainConfig.slack.token,
         apiUrl: jsonPlainConfig.slack.apiUrl,
       },
+      api: {
+        key: jsonPlainConfig.api.key,
+        url: jsonPlainConfig.api.url,
+      },
     };
     this.config.db.url = generateDatabaseUrl(this.config.db);
   }

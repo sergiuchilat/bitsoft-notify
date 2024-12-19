@@ -82,6 +82,10 @@ export default class EnvConfigStrategy {
         token: process.env.SLACK_TOKEN,
         apiUrl: process.env.SLACK_API_URL,
       },
+      api: {
+        url: process.env.API_URL,
+        key: process.env.API_KEY,
+      },
     };
 
     this.config.db.url = generateDatabaseUrl(this.config.db);

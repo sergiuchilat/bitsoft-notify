@@ -82,6 +82,10 @@ class AppConfigSingleton {
       token: null,
       apiUrl: null,
     },
+    api: {
+      key: null,
+      url: null,
+    },
   };
 
   public static getInstance(): AppConfigSingleton {

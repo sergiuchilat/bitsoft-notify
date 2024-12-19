@@ -1,10 +1,5 @@
-import {
-  HttpException,
-  Injectable,
-  Logger,
-  OnModuleInit,
-} from '@nestjs/common';
-import { Client, LocalAuth } from 'whatsapp-web.js';
+import { HttpException, Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Client, LocalAuth, Message } from 'whatsapp-web.js';
 import { SendMessageDto } from '@/app/modules/notification/modules/whatsapp/dto/send-message.dto.js';
 import { HttpStatusCode } from 'axios';
 import { Repository } from 'typeorm';
@@ -12,6 +7,8 @@ import { WhatsappNotificationEntity } from '@/app/modules/notification/modules/w
 import { InjectRepository } from '@nestjs/typeorm';
 import qrcode from 'qrcode';
 import { SendPersonalMessageDto } from '@/app/modules/notification/modules/whatsapp/dto/sent-personal-message.dto';
+import { WhatsappApiService } from '@/app/modules/notification/modules/whatsapp/services/whatsapp-api.service';
+import { MessageReplyWebhookDto } from '@/app/modules/notification/modules/whatsapp/dto/message-reply-webhook.dto';
 
 @Injectable()
 export class WhatsappNotificationService implements OnModuleInit {
@@ -27,9 +24,11 @@ export class WhatsappNotificationService implements OnModuleInit {
   constructor(
     @InjectRepository(WhatsappNotificationEntity)
     private readonly whatsappNotificationRepository: Repository<WhatsappNotificationEntity>,
+    private readonly whatsappApiService: WhatsappApiService,
   ) {}
 
   onModuleInit() {
+    this.watchMessages();
     this.watchQrCode();
     this.watchReady();
 
@@ -90,21 +89,47 @@ export class WhatsappNotificationService implements OnModuleInit {
   }
 
   private async sendNotifications(entities: WhatsappNotificationEntity[]) {
+    const responses: Message[] = [];
+
     for (const entity of entities) {
       const message = this.getMessageText(entity);
 
       try {
-        await this.client.sendMessage(entity.receiver_id, message);
+        const response = await this.client.sendMessage(entity.receiver_id, message);
+        responses.push(response);
       } catch (err) {
         this.logger.error(`Cannot notify: ${err.message}`);
         continue;
       }
 
-      await this.whatsappNotificationRepository.update(
-        { id: entity.id },
-        { sent_at: new Date() },
-      );
+      await this.whatsappNotificationRepository.update({ id: entity.id }, { sent_at: new Date() });
     }
+
+    return responses.map((response: Message) => response.id);
+  }
+
+  private watchMessages() {
+    this.client.on('message', this.handleIncomingMessage.bind(this));
+  }
+
+  private handleIncomingMessage(message: Message) {
+    console.log(message);
+
+    if (!message.hasQuotedMsg) {
+      return;
+    }
+
+    message.getQuotedMessage().then((quotedMessage) => {
+      const quotedMessageId = quotedMessage.id.id;
+
+      const payload: MessageReplyWebhookDto = {
+        content: message.body,
+        phone: `+${message.from.split('@')[0]}`,
+        message_id: quotedMessageId,
+      };
+
+      this.whatsappApiService.messageReplyWebhook(payload).subscribe();
+    });
   }
 
   private getMessageText(payload: { subject: string; body: string }) {

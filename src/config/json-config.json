@@ -82,5 +82,9 @@
   "slack": {
     "token": null,
     "apiUrl": null
+  },
+  "api": {
+    "url": null,
+    "key": null
   }
 }

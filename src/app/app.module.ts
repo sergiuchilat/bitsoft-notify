@@ -6,10 +6,18 @@ import { SeedService } from '@/database/seeds/seed.service';
 import i18nConfig from '@/app/services/i18n-config';
 import TypeormConnector from '@/database/connectors/typeorm.connector';
 import { JwtService } from '@nestjs/jwt';
-import { SlackModule } from './modules/notification/modules/slack/slack.module';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
-  imports: [...TypeormConnector, i18nConfig, ...AppModules, EventEmitterConfig, SlackModule],
+  imports: [
+    ...TypeormConnector,
+    i18nConfig,
+    ...AppModules,
+    EventEmitterConfig,
+    HttpModule.register({
+      global: true,
+    }),
+  ],
   providers: [SeedService, JwtService],
 })
 export class AppModule implements NestModule {

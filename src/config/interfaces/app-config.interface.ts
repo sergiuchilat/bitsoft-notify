@@ -5,6 +5,7 @@ import AppConfigInterface from './components/app-config.interface';
 import TelegramConfigInterface from './components/telegram-config.interface';
 import MailConfigInterface from '@/config/interfaces/components/mail-config.interface';
 import { SlackConfigInterface } from '@/config/interfaces/components/slack-config.interface';
+import { ApiConfigInterface } from '@/config/interfaces/components/api-config.interface';
 
 export default interface ConfigInterface {
   app: AppConfigInterface;
@@ -14,4 +15,5 @@ export default interface ConfigInterface {
   telegram: TelegramConfigInterface;
   mail: MailConfigInterface;
   slack: SlackConfigInterface;
+  api: ApiConfigInterface;
 }
