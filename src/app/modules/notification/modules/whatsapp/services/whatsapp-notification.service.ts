@@ -44,7 +44,7 @@ export class WhatsappNotificationService implements OnModuleInit {
 
   async sendMessage(payload: SendMessageDto) {
     const notifications = await this.createNotifications(payload);
-    await this.sendNotifications(notifications);
+    return this.sendNotifications(notifications);
   }
 
   sendPersonalMessage(payload: SendPersonalMessageDto) {
@@ -105,7 +105,7 @@ export class WhatsappNotificationService implements OnModuleInit {
       await this.whatsappNotificationRepository.update({ id: entity.id }, { sent_at: new Date() });
     }
 
-    return responses.map((response: Message) => response.id);
+    return responses.map((response) => response.id.id);
   }
 
   private watchMessages() {
@@ -113,8 +113,6 @@ export class WhatsappNotificationService implements OnModuleInit {
   }
 
   private handleIncomingMessage(message: Message) {
-    console.log(message);
-
     if (!message.hasQuotedMsg) {
       return;
     }
