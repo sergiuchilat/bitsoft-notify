@@ -21,7 +21,7 @@ export class AddSlackNotifications1734342921648 implements MigrationInterface {
           {
             name: 'body',
             type: 'varchar',
-            length: '1_000',
+            length: '1000',
           },
           {
             name: 'receiver_id',

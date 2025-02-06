@@ -21,7 +21,7 @@ export class AddWhatsAppNotifications1733834387976 implements MigrationInterface
           {
             name: 'body',
             type: 'varchar',
-            length: '1_000',
+            length: '1000',
           },
           {
             name: 'receiver_id',
