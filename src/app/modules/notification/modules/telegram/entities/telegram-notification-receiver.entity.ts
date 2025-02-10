@@ -17,7 +17,7 @@ export class TelegramNotificationReceiver {
     receiver_uuid: string;
 
   @Column({
-    unique: true,
+    unique: false,
     nullable: true,
   })
     chat_id: string;
