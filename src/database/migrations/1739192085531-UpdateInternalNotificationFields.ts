@@ -3,7 +3,7 @@ import { MigrationInterface, QueryRunner, TableColumn, TableIndex } from 'typeor
 export class UpdateInternalNotificationFields1739192085531 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     // Drop the unique constraint
-    await queryRunner.dropIndex('internal_notifications', 'IDX_INTERNAL_NOTIFICATIONS_SENDER_UUID');
+    await queryRunner.dropIndex('internal_notifications', 'UQ_ca86bfecee35a80772d28128e53');
 
     // Alter the column without uniqueness
     await queryRunner.changeColumn(
@@ -33,7 +33,7 @@ export class UpdateInternalNotificationFields1739192085531 implements MigrationI
 
     // Re-add the unique constraint
     await queryRunner.createIndex(
-      'internal_notifications',
+      'UQ_ca86bfecee35a80772d28128e53',
       new TableIndex({
         name: 'IDX_INTERNAL_NOTIFICATIONS_SENDER_UUID',
         columnNames: ['sender_uuid'],
