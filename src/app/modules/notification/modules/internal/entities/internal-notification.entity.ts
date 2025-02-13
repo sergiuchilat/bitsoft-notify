@@ -19,7 +19,7 @@ export class InternalNotification {
   @Column({
     length: 36,
     unique: false,
-    nullable: false,
+    nullable: true,
   })
     sender_uuid: string;
 
