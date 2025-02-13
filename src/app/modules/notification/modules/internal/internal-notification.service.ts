@@ -30,60 +30,65 @@ export class InternalNotificationService {
   async create(
     notification: InternalNotificationCreatePayloadDto,
   ): Promise<InternalNotificationCreateResponseDto> {
+    // Convert incoming DTO to entity and assign a new UUID.
     const notificationEntity = plainToInstance(InternalNotification, notification);
     notificationEntity.uuid = uuidv4();
-    const queryRunner = this.dateSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
 
-    let addedNotification: InternalNotificationCreateResponseDto = null;
+    // Run all database operations within a transaction.
+    const savedNotification = await this.dateSource.transaction(async (manager) => {
+      // Save the main notification entity.
+      const notificationSaved = await manager.save(InternalNotification, notificationEntity);
 
-    try {
-      addedNotification = await queryRunner.manager.save(InternalNotification, notificationEntity);
+      // Save translations (if any) in parallel after setting the foreign key.
+      if (notificationEntity.translations && notificationEntity.translations.length > 0) {
+        const translations = notificationEntity.translations.map((translation) => ({
+          ...translation,
+          notification_id: notificationSaved.id,
+        }));
 
-      for (const notificationTranslation of notificationEntity.translations) {
-        notificationTranslation.notification_id = notificationEntity.id;
-        await queryRunner.manager.save(InternalNotificationTranslation, notificationTranslation);
+        await manager.save(InternalNotificationTranslation, translations);
       }
 
-      for (const notificationReceiver of notification.receivers) {
-        const messageReceiverEntity: InternalNotificationReceiver = {
-          id: null,
-          notification_id: notificationEntity.id,
-          receiver_uuid: notificationReceiver,
-          notification: null,
-          sent_at: new Date(),
-          viewed_at: null,
-          confirm_view_at: null,
-        };
+      // Prepare receiver entities and emit notification-created events.
+      if (notification.receivers && notification.receivers.length > 0) {
+        const receiverEntities = notification.receivers.map((receiverUuid) => {
+          // Emit the event for notification creation (if this is a side effect you need within the transaction).
+          this.emitEventNotificationCreated({
+            receiver: receiverUuid,
+            uuid: notificationSaved.uuid,
+            translations: (notificationEntity.translations || []).map(({ language, subject }) => ({
+              language,
+              subject,
+            })),
+          });
 
-        this.emitEventNotificationCreated({
-          receiver: notificationReceiver,
-          uuid: notificationEntity.uuid,
-          translations: notificationEntity.translations.map((translation) => {
-            return {
-              language: translation.language,
-              subject: translation.subject,
-            };
-          }),
+          return {
+            notification_id: notificationSaved.id,
+            receiver_uuid: receiverUuid,
+            sent_at: new Date(),
+            viewed_at: null,
+            confirm_view_at: null,
+          } as InternalNotificationReceiver;
         });
 
-        await queryRunner.manager.save(InternalNotificationReceiver, messageReceiverEntity);
+        await manager.save(InternalNotificationReceiver, receiverEntities);
       }
 
-      await queryRunner.commitTransaction();
-    } catch (e) {
-      await queryRunner.rollbackTransaction();
-    } finally {
-      await queryRunner.release();
+      // Return the saved notification for further processing.
+      return notificationSaved;
+    });
+
+    // Emit unread counter events outside the transaction (in parallel).
+    if (notification.receivers && notification.receivers.length > 0) {
+      await Promise.all(
+        notification.receivers.map((receiverUuid) => this.emitEventUnreadCounter(receiverUuid)),
+      );
     }
 
-    for (const notificationReceiver of notification.receivers) {
-      await this.emitEventUnreadCounter(notificationReceiver);
-    }
-
-    return plainToInstance(InternalNotificationCreateResponseDto, addedNotification);
+    // Return the response DTO.
+    return plainToInstance(InternalNotificationCreateResponseDto, savedNotification);
   }
+
 
   async getAllPaginated(options: IPaginationOptions): Promise<any> {
     try {
