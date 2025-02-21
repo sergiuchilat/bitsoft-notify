@@ -7,7 +7,7 @@ on:
 
 env:
   APP_NAME: bitsoft-notify
-  APP_VERSION: "v1.0.22.4"
+  APP_VERSION: "v1.0.22.5"
   NETWORK: nest-notify
 
 jobs:
